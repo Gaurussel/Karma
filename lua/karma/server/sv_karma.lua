@@ -199,7 +199,7 @@ hook.Add("PostEntityTakeDamage", "karma.PostEntityTakeDamage", function(ent, dmg
     end
 
     timer.Create(timerName, 10, 1, function()
-        if !IsValid(ent) then
+        if !IsValid(ent) or !IsValid(attacker) then
             return
         end
 
