@@ -29,7 +29,7 @@ hook.Add("DoPlayerDeath", "karma.PlayerDeath", function(victim, ent, dmg)
     end
 
 
-    if string.StartsWith(activeWeapon, "weapon_") then
+    if string.StartsWith(activeWeapon, "cw_") then
         return
     end
 
@@ -51,7 +51,7 @@ hook.Add("PlayerTick", "karma.PlayerTick", function(ply)
 
     local activeWeapon = IsValid(ply:GetActiveWeapon()) and ply:GetActiveWeapon():GetClass() or ""
 
-    if !string.StartWith(activeWeapon, "weapon_") then
+    if !string.StartWith(activeWeapon, "cw_") then
         return
     end
 
@@ -192,8 +192,24 @@ hook.Add("PostEntityTakeDamage", "karma.PostEntityTakeDamage", function(ent, dmg
         return
     end
 
-    attacker.damage[ent] = true
-    attacker:AddKarma(KARMA.config.Degreese.mDamageAmount, 2)
+    local timerName = "karma.damage." .. ent:SteamID()
+
+    if timer.Exists(timerName) then
+        return
+    end
+
+    timer.Create(timerName, 10, 1, function()
+        if !IsValid(ent) then
+            return
+        end
+
+        if !ent:Alive() then
+            return
+        end
+
+        attacker.damage[ent] = true
+        attacker:AddKarma(KARMA.config.Degreese.mDamageAmount, 2)
+    end)
 end)
 
 hook.Add("playerArrested", "karma.playerArrested", function(criminal, _, officer)
